@@ -10,15 +10,16 @@ jobs:
   laravel-tests:
     runs-on: ubuntu-latest
 
+    defaults:
+      run:
+        working-directory: ./SRM11A1Capstone-Project  # 👈 Point to Laravel app directory
+
     steps:
     - uses: actions/checkout@v4
 
-    - name: Setup PHP with extensions
-      uses: shivammathur/setup-php@v2
+    - uses: shivammathur/setup-php@v2
       with:
         php-version: '8.0'
-        extensions: mbstring, pdo, sqlite, bcmath, xml
-        coverage: none
 
     - name: Copy .env
       run: php -r "file_exists('.env') || copy('.env.example', '.env');"
@@ -26,18 +27,18 @@ jobs:
     - name: Install Dependencies
       run: composer install -vvv --no-ansi --no-interaction --no-scripts --no-progress --prefer-dist
 
-    - name: Generate application key
+    - name: Generate App Key
       run: php artisan key:generate
 
-    - name: Set directory permissions
+    - name: Set Directory Permissions
       run: chmod -R 777 storage bootstrap/cache
 
-    - name: Create SQLite database
+    - name: Create SQLite Database
       run: |
         mkdir -p database
         touch database/database.sqlite
 
-    - name: Run Tests via PHPUnit
+    - name: Run Tests (PHPUnit/Pest)
       env:
         DB_CONNECTION: sqlite
         DB_DATABASE: database/database.sqlite
